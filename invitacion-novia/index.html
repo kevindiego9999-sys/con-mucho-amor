@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>Con mucho amor 💖</title>
+
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+
+body{
+    height:100vh;
+    background:radial-gradient(circle,#ffe6f0,#f8bbd0);
+    font-family:'Segoe UI',sans-serif;
+    overflow:hidden;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+}
+
+/* ================= CARTA ================= */
+.envelope{
+    width:330px;
+    height:230px;
+    background:linear-gradient(145deg,#fff,#ffe4ec);
+    border-radius:18px;
+    position:relative;
+    box-shadow:0 20px 45px rgba(233,30,99,.45);
+    animation:entrada 2.2s ease;
+}
+.envelope::before{
+    content:"";
+    position:absolute;
+    top:0;
+    left:0;
+    border-left:165px solid transparent;
+    border-right:165px solid transparent;
+    border-top:120px solid #f48fb1;
+}
+.letter{
+    position:absolute;
+    width:92%;
+    height:82%;
+    top:20px;
+    left:4%;
+    background:#fff;
+    border-radius:14px;
+    text-align:center;
+    padding:22px;
+    animation:flotar 2s infinite alternate;
+}
+.letter h1{
+    color:#e91e63;
+    font-size:24px;
+    margin-bottom:10px;
+}
+.letter p{
+    color:#777;
+    font-size:15px;
+    margin-bottom:18px;
+}
+
+/* BOTÓN ABRIR */
+.open-btn{
+    background:linear-gradient(45deg,#ff4081,#e91e63);
+    color:#fff;
+    border:none;
+    padding:14px 34px;
+    border-radius:35px;
+    font-size:17px;
+    cursor:pointer;
+    box-shadow:0 0 20px rgba(233,30,99,.6);
+    animation:latir 1.4s infinite;
+}
+
+@keyframes latir{
+    0%{transform:scale(1)}
+    50%{transform:scale(1.15)}
+    100%{transform:scale(1)}
+}
+@keyframes entrada{
+    from{opacity:0;transform:scale(.4)}
+    to{opacity:1;transform:scale(1)}
+}
+@keyframes flotar{
+    from{transform:translateY(0)}
+    to{transform:translateY(-10px)}
+}
+
+/* ================= CONTENIDO ================= */
+.content{display:none;width:100%;height:100%}
+.hero{
+    height:100vh;
+    background:url('principal.jpeg') no-repeat center/cover;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+}
+.card{
+    background:rgba(255,255,255,.98);
+    padding:26px;
+    border-radius:28px;
+    text-align:center;
+    max-width:430px;
+    width:94%;
+    position:relative;
+    z-index:10;
+}
+
+/* BOTONES */
+.botones{
+    display:flex;
+    justify-content:space-around;
+    margin-top:20px;
+}
+button{
+    padding:14px 28px;
+    border:none;
+    border-radius:30px;
+    font-size:17px;
+    cursor:pointer;
+}
+
+#si{
+    background:linear-gradient(45deg,#ff4081,#e91e63);
+    color:#fff;
+    box-shadow:0 0 18px rgba(233,30,99,.6);
+    animation:latir 1.5s infinite;
+}
+
+#no{
+    background:#ff6f91;
+    color:#fff;
+    position:relative;
+}
+
+/* ================= CONTADOR ================= */
+.contador{
+    margin-top:15px;
+    background:#ffe4ec;
+    padding:14px;
+    border-radius:18px;
+    color:#e91e63;
+    font-weight:bold;
+    font-size:14px;
+}
+
+/* ================= CARRUSEL ================= */
+.carousel{
+    width:100%;
+    height:300px;
+    margin-top:15px;
+    position:relative;
+    overflow:hidden;
+    border-radius:22px;
+}
+.slide{
+    position:absolute;
+    inset:0;
+    opacity:0;
+    transition:opacity 1s;
+}
+.slide.active{opacity:1}
+.slide img,.slide video{
+    width:100%;
+    height:100%;
+    object-fit:cover;
+}
+
+/* ================= CORAZONES Y FRASES ================= */
+.heart{
+    position:fixed;
+    bottom:-40px;
+    pointer-events:none;
+    animation:subir 8s linear forwards;
+    z-index:1;
+}
+
+.frase{
+    position:fixed;
+    bottom:-40px;
+    font-weight:bold;
+    white-space:nowrap;
+    pointer-events:none;
+    animation:subir 10s linear forwards;
+    z-index:2;
+    text-shadow:0 0 8px currentColor;
+}
+
+@keyframes subir{
+    from{transform:translateY(0) scale(.8);opacity:0}
+    10%{opacity:1}
+    to{transform:translateY(-120vh) scale(1.3);opacity:0}
+}
+</style>
+</head>
+
+<body>
+
+<!-- CARTA -->
+<div class="envelope" id="envelope">
+    <div class="letter">
+        <h1>Para ti 💖</h1>
+        <p>Con todo mi amor, cada latido y cada recuerdo…</p>
+        <button class="open-btn" onclick="abrir()">ABRIR 💌</button>
+    </div>
+</div>
+
+<!-- CONTENIDO -->
+<div class="content" id="content">
+    <div class="hero">
+        <div class="card" id="card">
+            <h1>Mi amor 💕</h1>
+            <p>¿Aceptas que mañana te invite a comer comida china conmigo? 🍜🥢</p>
+
+            <div class="botones">
+                <button id="si" onclick="aceptar()">Sí, con todo mi corazón 💖</button>
+                <button id="no" onmouseover="moverNo()">No 🙈</button>
+            </div>
+
+            <div class="contador" id="contador"></div>
+        </div>
+    </div>
+</div>
+
+<audio id="musica" src="musica.mp3"></audio>
+
+<script>
+/* === FECHA DE INICIO === */
+const fechaInicio = new Date("2022-10-18T00:00:00");
+
+/* === FRASES Y COLORES === */
+const frases=[
+"Siempre te elegiré 💖",
+"Eres mi lugar seguro 🏡",
+"Te amo más cada día ❤️",
+"Gracias por quedarte 💕",
+"Mi amor eterno 💞",
+"Contigo todo es mejor ✨"
+];
+const colores=["#ff1744","#ff4081","#e040fb","#ff80ab"];
+
+let slides=[],i=0;
+let corazonesInterval,frasesInterval;
+
+function vibrar(ms){ if(navigator.vibrate) navigator.vibrate(ms); }
+
+function abrir(){
+    vibrar(200);
+    envelope.style.display="none";
+    content.style.display="block";
+}
+
+function aceptar(){
+    vibrar([120,80,120]);
+    musica.play();
+
+    card.innerHTML=`
+    <h1>Feliz 3 años, 2 meses 💖</h1>
+    <p>Gracias por cada momento juntos ❤️</p>
+    <div class="contador" id="contador"></div>
+
+    <div class="carousel">
+
+    <!-- BLOQUE 1 -->
+    <div class="slide active"><img src="foto1.jpeg"></div>
+    <div class="slide"><img src="foto2.jpeg"></div>
+    <div class="slide"><img src="foto3.jpeg"></div>
+    <div class="slide"><img src="foto4.jpeg"></div>
+    <div class="slide"><video src="video1.mp4" muted></video></div>
+
+    <!-- BLOQUE 2 -->
+    <div class="slide"><img src="foto5.jpeg"></div>
+    <div class="slide"><img src="foto6.jpeg"></div>
+    <div class="slide"><img src="foto7.jpeg"></div>
+    <div class="slide"><img src="foto8.jpeg"></div>
+    <div class="slide"><video src="video2.mp4" muted></video></div>
+
+    <!-- BLOQUE 3 -->
+    <div class="slide"><img src="foto9.jpeg"></div>
+    <div class="slide"><img src="foto10.jpeg"></div>
+    <div class="slide"><img src="foto11.jpeg"></div>
+    <div class="slide"><img src="foto12.jpeg"></div>
+    <div class="slide"><video src="video3.mp4" muted></video></div>
+
+    <!-- BLOQUE 4 -->
+    <div class="slide"><img src="foto13.jpeg"></div>
+    <div class="slide"><img src="foto14.jpeg"></div>
+    <div class="slide"><img src="foto15.jpeg"></div>
+    <div class="slide"><img src="foto16.jpeg"></div>
+    <div class="slide"><video src="video4.mp4" muted></video></div>
+
+    <!-- BLOQUE 5 -->
+    <div class="slide"><img src="foto17.jpeg"></div>
+    <div class="slide"><img src="foto18.jpeg"></div>
+    <div class="slide"><img src="foto19.jpeg"></div>
+    <div class="slide"><img src="foto20.jpeg"></div>
+    <div class="slide"><video src="video5.mp4" muted></video></div>
+
+    <!-- BLOQUE 6 -->
+    <div class="slide"><img src="foto21.jpeg"></div>
+    <div class="slide"><img src="foto22.jpeg"></div>
+    <div class="slide"><img src="foto23.jpeg"></div>
+    <div class="slide"><img src="foto24.jpeg"></div>
+    <div class="slide"><video src="video6.mp4" muted></video></div>
+
+    <!-- BLOQUE 7 -->
+    <div class="slide"><img src="foto25.jpeg"></div>
+    <div class="slide"><img src="foto26.jpeg"></div>
+    <div class="slide"><img src="foto27.jpeg"></div>
+    <div class="slide"><img src="foto28.jpeg"></div>
+    <div class="slide"><video src="video7.mp4" muted></video></div>
+
+    <!-- BLOQUE 8 -->
+    <div class="slide"><img src="foto29.jpeg"></div>
+    <div class="slide"><img src="foto30.jpeg"></div>
+    <div class="slide"><img src="foto31.jpeg"></div>
+    <div class="slide"><img src="foto32.jpeg"></div>
+    <div class="slide"><video src="video8.mp4" muted></video></div>
+
+    <!-- BLOQUE 9 (video final) -->
+    <div class="slide"><video src="video9.mp4" muted></video></div>
+
+</div>
+    `;
+
+    slides=document.querySelectorAll(".slide");
+    setInterval(cambiar,4000);
+    setInterval(actualizarContador,1000);
+
+    /* INICIAR CORAZONES Y FRASES */
+    corazonesInterval=setInterval(crearCorazon,300);
+    frasesInterval=setInterval(crearFrase,1200);
+}
+
+function cambiar(){
+    slides[i].classList.remove("active");
+    let v=slides[i].querySelector("video");
+    if(v) v.pause();
+    i=(i+1)%slides.length;
+    slides[i].classList.add("active");
+    let nv=slides[i].querySelector("video");
+    if(nv) nv.play();
+}
+
+function moverNo(){
+    no.style.transform=`translate(${Math.random()*200-100}px,${Math.random()*140-70}px)`;
+}
+
+/* === CONTADOR === */
+function actualizarContador(){
+    const ahora=new Date();
+    let diff=ahora-fechaInicio;
+
+    let s=Math.floor(diff/1000)%60;
+    let m=Math.floor(diff/60000)%60;
+    let h=Math.floor(diff/3600000)%24;
+    let d=Math.floor(diff/86400000);
+
+    document.getElementById("contador").innerHTML=
+    `⏱️ Juntos: ${d} días, ${h} h, ${m} min, ${s} s 💖`;
+}
+
+/* === CORAZONES === */
+function crearCorazon(){
+    const h=document.createElement("div");
+    h.className="heart";
+    h.innerText="❤";
+    h.style.left=Math.random()*100+"vw";
+    h.style.color=colores[Math.floor(Math.random()*colores.length)];
+    h.style.fontSize=(Math.random()*12+18)+"px";
+    document.body.appendChild(h);
+    setTimeout(()=>h.remove(),8000);
+}
+
+/* === FRASES === */
+function crearFrase(){
+    const f=document.createElement("div");
+    f.className="frase";
+    f.innerText=frases[Math.floor(Math.random()*frases.length)];
+    f.style.left=Math.random()*60+20+"vw";
+    f.style.color=colores[Math.floor(Math.random()*colores.length)];
+    f.style.fontSize="18px";
+    document.body.appendChild(f);
+    setTimeout(()=>f.remove(),10000);
+}
+
+setInterval(actualizarContador,1000);
+</script>
+
+</body>
+</html>
